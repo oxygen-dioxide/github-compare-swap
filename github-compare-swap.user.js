@@ -1,9 +1,9 @@
 // ==UserScript==
 // @name        GitHub Compare Branch Swapper
-// @namespace   https://github.com/oxygen-dioxide
-// @version     0.1.0
+// @namespace   https://github.com/your-username
+// @version     0.2.0
 // @description Adds a "Swap" button to GitHub compare pages.
-// @author      oxygen-dioxide
+// @author      Your Name (or leave blank)
 // @match       https://github.com/*/compare/*
 // @grant       none
 // ==/UserScript==
@@ -21,31 +21,46 @@
             const newUrl = `https://github.com/${user2}/${repo2}/compare/${branch2}...${user1}:${repo1}:${branch1}`;
             window.location.href = newUrl;
         } else {
-            console.warn("Could not parse the compare URL.");
-        }
-    }
-
-    function addButton() {
-        const compareBar = document.querySelector('.select-menu');
-        if (compareBar) {
-            const swapButton = document.createElement('button');
-            swapButton.textContent = 'Swap';
-            swapButton.classList.add('btn', 'btn-sm'); // Add some basic GitHub button styling
-            swapButton.addEventListener('click', swapBranches);
-
-            const actionsDiv = compareBar.querySelector('.flex-auto.text-right');
-            if (actionsDiv) {
-                actionsDiv.insertBefore(swapButton, actionsDiv.firstChild);
+            const regexSameRepo = /github\.com\/([^/]+)\/([^/]+)\/compare\/([^.]+)\.\.\.([^.]+)/;
+            const matchSameRepo = currentUrl.match(regexSameRepo);
+            if (matchSameRepo) {
+                const [, user, repo, branch1, branch2] = matchSameRepo;
+                const newUrl = `https://github.com/${user}/${repo}/compare/${branch2}...${branch1}`;
+                window.location.href = newUrl;
+            }
+             else {
+                console.warn("Could not parse the compare URL.");
             }
         }
     }
 
-    // Observe changes to the DOM and add the button when the compare bar appears
+    function addButton() {
+        const compareHeader = document.querySelector('.compare-show-header');
+        const comparePrHeader = document.querySelector('.compare-pr-header');
+        let targetElement;
+
+        if (compareHeader) {
+            targetElement = compareHeader.querySelector('.Subhead-description');
+        } else if (comparePrHeader) {
+            targetElement = comparePrHeader.querySelector('.Subhead-description');
+        }
+
+        if (targetElement) {
+            const swapButton = document.createElement('button');
+            swapButton.textContent = 'Swap';
+            swapButton.classList.add('btn', 'btn-sm', 'ml-2'); // Add some basic GitHub button styling and margin
+            swapButton.addEventListener('click', swapBranches);
+
+            targetElement.parentNode.insertBefore(swapButton, targetElement.nextSibling);
+        }
+    }
+
+    // Observe changes to the DOM and add the button when the relevant header appears
     const observer = new MutationObserver((mutationsList, observer) => {
         for (const mutation of mutationsList) {
             if (mutation.addedNodes) {
                 mutation.addedNodes.forEach(node => {
-                    if (node.nodeType === Node.ELEMENT_NODE && node.classList.contains('js-compare-pr-sticky-nav')) {
+                    if (node.nodeType === Node.ELEMENT_NODE && (node.classList.contains('compare-show-header') || node.classList.contains('compare-pr-header'))) {
                         addButton();
                         observer.disconnect(); // Stop observing once the element is found
                     }
