@@ -26,7 +26,7 @@
     }
 
     function addButton() {
-        const compareBar = document.querySelector('.js-compare-pr-sticky-nav');
+        const compareBar = document.querySelector('.select-menu');
         if (compareBar) {
             const swapButton = document.createElement('button');
             swapButton.textContent = 'Swap';
