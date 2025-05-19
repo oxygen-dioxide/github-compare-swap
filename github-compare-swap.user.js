@@ -1,9 +1,9 @@
 // ==UserScript==
 // @name        GitHub Compare Branch Swapper
-// @namespace   https://github.com/your-username
-// @version     0.2.0
+// @namespace   https://github.com/oxygen-dioxide
+// @version     0.3.0
 // @description Adds a "Swap" button to GitHub compare pages.
-// @author      Your Name (or leave blank)
+// @author      oxygen-dioxide
 // @match       https://github.com/*/compare/*
 // @grant       none
 // ==/UserScript==
